@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Members.Commands.CreateMember;
 using WebApp.Application.Members.Queries.GetById;
+using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Member;
 
 namespace WebApp.Presentation.Controllers;
@@ -17,18 +19,20 @@ public sealed class MembersController : Controller
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberResponse))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MemberResponse>> GetMemberById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetMemberByIdQuery(id);
 
-        MemberResponse response = await _mediator.Send(query, cancellationToken);
+        Result<MemberResponse> response = await _mediator.Send(query, cancellationToken);
 
-        return Ok(response);
+        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> RegisterMember(
     [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
@@ -38,12 +42,18 @@ public sealed class MembersController : Controller
             request.FirstName,
             request.LastName);
 
-        Guid result = await _mediator.Send(command, cancellationToken);
+        Result<Guid> result = await _mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
         return CreatedAtAction(
             nameof(GetMemberById),
-            new { id = result },
-            result);
+            new { id = result.Value },
+            result.Value
+        );
     }
 
 }

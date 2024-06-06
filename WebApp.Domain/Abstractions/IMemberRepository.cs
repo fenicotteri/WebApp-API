@@ -1,5 +1,4 @@
 ﻿using WebApp.Domain.Entities;
-using WebApp.Domain.Entities;
 
 namespace WebApp.Domain.Abstractions;
 

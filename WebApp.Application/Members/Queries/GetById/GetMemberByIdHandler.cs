@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using WebApp.Domain.Abstractions;
+using WebApp.Domain.Errors;
+using WebApp.Domain.Shared;
 
 namespace WebApp.Application.Members.Queries.GetById;
 
 internal sealed class GetMemberByIdQueryHandler
-    : IRequestHandler<GetMemberByIdQuery, MemberResponse>
+    : IRequestHandler<GetMemberByIdQuery, Result<MemberResponse>>
 {
     private readonly IMemberRepository _memberRepository;
 
@@ -13,7 +15,7 @@ internal sealed class GetMemberByIdQueryHandler
         _memberRepository = memberRepository;
     }
 
-    public async Task<MemberResponse> Handle(
+    public async Task<Result<MemberResponse>> Handle(
         GetMemberByIdQuery request,
         CancellationToken cancellationToken)
     {
@@ -23,7 +25,7 @@ internal sealed class GetMemberByIdQueryHandler
 
         if (member is null)
         {
-            throw new ArgumentNullException(nameof(member));
+            return Result.Failure<MemberResponse>(DomainErrors.Member.NotFound(request.MemberId));
         }
 
         // mapper goes here
