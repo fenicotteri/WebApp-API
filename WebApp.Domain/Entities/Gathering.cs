@@ -1,9 +1,11 @@
-﻿using Domain.Primitives;
-using WebApp.Domain.Entities;
+﻿
+using WebApp.Domain.Errors;
+using WebApp.Domain.Primitives;
+using WebApp.Domain.Shared;
 
 namespace WebApp.Domain.Entities;
 
-public sealed class Gathering : Entity
+public sealed class Gathering : AggregateRoot
 {
     private readonly List<Invitation> _invitations = new();
     private readonly List<Attendee> _attendees = new();
@@ -25,10 +27,11 @@ public sealed class Gathering : Entity
     private Gathering()
     {
     }
+    
 
-    public Member Creator { get; private set; }
+    public Member Creator { get; private set; } 
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
     public DateTime ScheduledAtUtc { get; private set; }
 
@@ -43,5 +46,24 @@ public sealed class Gathering : Entity
     public IReadOnlyCollection<Attendee> Attendees => _attendees;
 
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
+
+    public Result<Invitation> SendInvitation(Member member)
+    {
+        if (member.Id == Creator.Id)
+        {
+            return Result.Failure<Invitation>(DomainErrors.Gathering.InvitingCreator);
+        }
+
+        if (ScheduledAtUtc <  DateTime.UtcNow)
+        {
+            return Result.Failure<Invitation>(DomainErrors.Gathering.InvitingCreator);
+        }
+
+        Invitation invitation = new Invitation(new Guid(), member, this);
+
+        _invitations.Add(invitation);
+
+        return invitation;
+    }
 
 }

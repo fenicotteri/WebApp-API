@@ -12,6 +12,8 @@ public sealed class DataContext : DbContext
     }
 
     public DbSet<Member> Members { get; set; }
+    public DbSet<Gathering> Gatherings { get; set; }
+    public DbSet<Invitation> Invitations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

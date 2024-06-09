@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApp.Domain.Abstractions;
 using WebApp.Domain.Entities;
+using WebApp.Domain.Repositories;
 using WebApp.Persistence;
 
 

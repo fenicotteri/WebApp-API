@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using WebApp.Domain.Abstractions;
 using WebApp.Domain.Errors;
+using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;
 
 namespace WebApp.Application.Members.Queries.GetById;
@@ -29,7 +29,7 @@ internal sealed class GetMemberByIdQueryHandler
         }
 
         // mapper goes here
-        var response = new MemberResponse(member.Email, member.FirstName, member.LastName, member.CreatedAt);
+        var response = new MemberResponse(member.Email, member.FirstName, member.LastName, member.CreatedOnUtc);
 
         return response;
     }

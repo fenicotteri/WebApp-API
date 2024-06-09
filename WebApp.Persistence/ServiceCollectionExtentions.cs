@@ -1,9 +1,7 @@
-﻿
-using Domain.Abstractions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebApp.Domain.Abstractions;
+using WebApp.Domain.Repositories;
 using WebApp.Infastructure.Repositories;
 
 namespace WebApp.Persistence;

@@ -4,17 +4,16 @@ namespace WebApp.Domain.Primitieves;
 
 public abstract class AuditableEntity : Entity
 {
-    public AuditableEntity(Guid id) : base(id)
+    protected AuditableEntity(Guid id) : base(id)
     {
         CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public DateTime CreatedAt { get; private init; }
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime ModifedAt { get; private set; }
     public void UpdateTime()
     {
-        UpdatedAt = DateTime.UtcNow;
+        ModifedAt = DateTime.UtcNow;
     }
 }
 

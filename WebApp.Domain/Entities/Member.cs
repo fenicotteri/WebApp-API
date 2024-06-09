@@ -1,8 +1,8 @@
-﻿using WebApp.Domain.Primitieves;
+﻿using WebApp.Domain.Primitives;
 
 namespace WebApp.Domain.Entities;
 
-public sealed class Member : AuditableEntity
+public sealed class Member : AggregateRoot
 {
     public Member(Guid id, string email, string firstName, string lastName)
         : base(id)
@@ -10,13 +10,22 @@ public sealed class Member : AuditableEntity
         Email = email;
         FirstName = firstName;
         LastName = lastName;
+        CreatedOnUtc = DateTime.UtcNow;
     }
 
-    public string Email { get; private set; }
+    private Member()
+    {
+    }
 
-    public string FirstName { get; private set; }
+    public string Email { get; private set; } = string.Empty;
 
-    public string LastName { get; private set; }
+    public string FirstName { get; private set; } = string.Empty;
+
+    public string LastName { get; private set; } = string.Empty;
+
+    public DateTime CreatedOnUtc { get; init; }
+
+    public DateTime? ModifiedOnUtc { get; private set; }
 
 }
 

@@ -2,6 +2,7 @@
 using Domain.Primitives;
 using WebApp.Domain.Entities;
 using WebApp.Domain.Enums;
+using WebApp.Domain.Shared;
 
 namespace WebApp.Domain.Entities;
 
@@ -46,4 +47,5 @@ public sealed class Invitation : Entity
 
         return attendee;
     }
+
 }
