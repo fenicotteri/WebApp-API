@@ -33,7 +33,8 @@ public static class ServiceCollectionExtensions
             //.AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IMemberRepository, MemberRepository>()
             .AddScoped<IGatheringRepository, GatheringRepository>()
-            .AddScoped<IInvitationRepository, InvitationRepository>();
+            .AddScoped<IInvitationRepository, InvitationRepository>()
+            .AddScoped<IAttendeeRepository, AttendeeRepository>();
 
     }
 

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Members.Commands.CreateMember;
 using WebApp.Application.Members.Queries.GetById;
 using WebApp.Domain.Shared;
-using WebApp.Presentation.Contracts.Member;
+using WebApp.Presentation.Contracts.Members;
 
 namespace WebApp.Presentation.Controllers;
 

@@ -1,5 +1,7 @@
 ﻿
+using Gatherly.Domain.Exceptions;
 using WebApp.Domain.Errors;
+using WebApp.Domain.Exceptions;
 using WebApp.Domain.Primitives;
 using WebApp.Domain.Shared;
 
@@ -10,7 +12,7 @@ public sealed class Gathering : AggregateRoot
     private readonly List<Invitation> _invitations = new();
     private readonly List<Attendee> _attendees = new();
 
-    public Gathering(
+    private Gathering(
         Guid id,
         Member creator,
         DateTime scheduledAtUtc,
@@ -36,9 +38,9 @@ public sealed class Gathering : AggregateRoot
 
     public string? Location { get; private set; }
 
-    public int? MaximumNumberOfAttendees { get; private set; }
+    public int MaximumNumberOfAttendees { get; private set; }
 
-    public DateTime? InvitationsExpireAtUtc { get; private set; }
+    public DateTime InvitationsExpireAtUtc { get; private set; }
 
     public int NumberOfAttendees { get; private set; }
 
@@ -46,6 +48,39 @@ public sealed class Gathering : AggregateRoot
 
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
 
+    public static Gathering Create(
+        Guid id,
+        Member creator,
+        DateTime scheduledAtUtc,
+        string name,
+        string? location,
+        int maximumNumberOfAttendees,
+        int invitationsValidBeforeInHours)
+    {
+        var gathering = new Gathering(
+            id,
+            creator,
+            scheduledAtUtc,
+            name,
+            location);
+
+        if (maximumNumberOfAttendees < 1)
+        {
+            throw new GatheringMaximumNumberOfAttendeesIsIncorrect(
+                $"{nameof(maximumNumberOfAttendees)} can't be null.");
+        }
+
+        if (invitationsValidBeforeInHours < 0)
+        {
+            throw new GatheringInvitationsValidBeforeInHoursIsIncorrect(
+                $"{nameof(invitationsValidBeforeInHours)} can't be null.");
+        }
+
+        gathering.InvitationsExpireAtUtc = gathering.ScheduledAtUtc.AddHours(-invitationsValidBeforeInHours);
+        gathering.MaximumNumberOfAttendees = maximumNumberOfAttendees;
+
+        return gathering;
+    }
     public Result<Invitation> SendInvitation(Member member)
     {
         if (member.Id == Creator.Id)
@@ -65,4 +100,20 @@ public sealed class Gathering : AggregateRoot
         return invitation;
     }
 
+    public Result<Attendee> AcceptInvitation(Invitation invitation)
+    {
+        if (InvitationsExpireAtUtc <  DateTime.UtcNow || _attendees.Count == MaximumNumberOfAttendees)
+        {
+            invitation.Expire();
+
+            return Result.Failure<Attendee>(DomainErrors.Gathering.Expired);
+        }
+
+        Attendee attendee = invitation.Accept();
+
+        _attendees.Add(attendee);
+        NumberOfAttendees++;
+
+        return attendee;
+    }
 }
