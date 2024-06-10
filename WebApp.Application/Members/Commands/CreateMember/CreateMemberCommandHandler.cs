@@ -4,6 +4,7 @@ using WebApp.Domain.Entities;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;
+using WebApp.Domain.ValueObjects;
 
 
 namespace WebApp.Application.Members.Commands.CreateMember;
@@ -22,16 +23,22 @@ internal sealed class CreateMemberCommandHandler : IRequestHandler<CreateMemberC
     }
     public async Task<Result<Guid>> Handle(CreateMemberCommand request, CancellationToken cancellationToken)
     {
-        if (!await _memberRepository.IsEmailUniqueAsync(request.Email, cancellationToken))
+        Result<Email> emailResult = Email.Create(request.Email);
+        
+        if (!await _memberRepository.IsEmailUniqueAsync(emailResult.Value, cancellationToken))
         {
             return Result.Failure<Guid>(DomainErrors.Member.EmailAlreadyInUse);
         }
 
+        // how to catch if Result.isFailure 
+        Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
+        Result<LastName> lastNameResult = LastName.Create(request.LastName);
+
         var member = new Member(
             new Guid(), 
-            request.Email, 
-            request.FirstName, 
-            request.LastName);
+            emailResult.Value, 
+            firstNameResult.Value, 
+            lastNameResult.Value);
 
         _memberRepository.Add(member);
 

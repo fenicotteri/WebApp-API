@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Domain.Entities;
 using WebApp.Domain.Repositories;
+using WebApp.Domain.ValueObjects;
 using WebApp.Persistence;
 
 
@@ -16,7 +17,7 @@ public sealed class MemberRepository : IMemberRepository
             .Members
             .FirstOrDefaultAsync(member => member.Id == id, cancellationToken);
 
-    public async Task<bool> IsEmailUniqueAsync( string email, CancellationToken cancellationToken = default) =>
+    public async Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default) =>
        !await _dbContext
            .Members
            .AnyAsync(member => member.Email == email, cancellationToken);

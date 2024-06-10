@@ -1,4 +1,5 @@
 ﻿using WebApp.Domain.Entities;
+using WebApp.Domain.ValueObjects;
 
 namespace WebApp.Domain.Repositories;
 
@@ -6,7 +7,7 @@ public interface IMemberRepository
 {
     Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<bool> IsEmailUniqueAsync(string email, CancellationToken cancellationToken = default);
+    Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default);
 
     void Add(Member member);
 

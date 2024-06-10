@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp.Domain.Repositories;
 using WebApp.Infastructure.Repositories;
+using WebApp.Persistence.Repositories;
 
 namespace WebApp.Persistence;
 
@@ -30,7 +31,10 @@ public static class ServiceCollectionExtensions
         services
             .AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork))
             //.AddScoped<IUnitOfWork, UnitOfWork>()
-            .AddScoped<IMemberRepository, MemberRepository>();
+            .AddScoped<IMemberRepository, MemberRepository>()
+            .AddScoped<IGatheringRepository, GatheringRepository>()
+            .AddScoped<IInvitationRepository, InvitationRepository>();
+
     }
 
 }

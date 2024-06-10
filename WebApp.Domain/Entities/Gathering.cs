@@ -27,9 +27,8 @@ public sealed class Gathering : AggregateRoot
     private Gathering()
     {
     }
-    
 
-    public Member Creator { get; private set; } 
+    public Member Creator { get; private set; } = null!;
 
     public string Name { get; private set; } = string.Empty;
 

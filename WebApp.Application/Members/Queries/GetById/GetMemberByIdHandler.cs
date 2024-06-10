@@ -29,7 +29,11 @@ internal sealed class GetMemberByIdQueryHandler
         }
 
         // mapper goes here
-        var response = new MemberResponse(member.Email, member.FirstName, member.LastName, member.CreatedOnUtc);
+        var response = new MemberResponse(
+            member.Email.Value,
+            member.FirstName.Value, 
+            member.LastName.Value, 
+            member.CreatedOnUtc);
 
         return response;
     }
