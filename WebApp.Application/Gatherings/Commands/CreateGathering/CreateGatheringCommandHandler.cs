@@ -41,7 +41,8 @@ public sealed class CreateGatheringCommandHandler : IRequestHandler<CreateGather
 
         _gatheringRepository.Add(gathering);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork
+            .SaveChangesAsync(cancellationToken);
 
         return gathering.Id;
     }

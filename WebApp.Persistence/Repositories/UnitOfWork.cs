@@ -1,27 +1,63 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WebApp.Domain.Primitieves;
+using WebApp.Domain.Primitives;
 using WebApp.Domain.Repositories;
-using WebApp.Persistence;
 
-namespace WebApp.Infastructure.Repositories;
+namespace WebApp.Persistence.Repositories;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
     private readonly DataContext _dbContext;
+    private readonly IPublisher _publisher;
 
-    public UnitOfWork(DataContext dbContext) => _dbContext = dbContext;
-    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public UnitOfWork(DataContext dbContext, IPublisher publisher) 
+    { 
+        _publisher = publisher;
+        _dbContext = dbContext; 
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var modifiedEntries = _dbContext.ChangeTracker.Entries()
-            .Where(e => e.Entity is AuditableEntity && 
-            (e.State == EntityState.Modified));
+        UpdateAuditableEntities();
+        await PublishingDomainEvents();
 
-        foreach(var entry in modifiedEntries)
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateAuditableEntities()
+    {
+        IEnumerable<EntityEntry<AuditableEntity>> entries =
+           _dbContext
+               .ChangeTracker
+               .Entries<AuditableEntity>();
+
+        foreach (EntityEntry<AuditableEntity> entityEntry in entries)
         {
-            ((AuditableEntity)entry.Entity).UpdateTime();
-        }
 
-        return _dbContext.SaveChangesAsync(cancellationToken);
+            if (entityEntry.State == EntityState.Modified)
+            {
+                entityEntry.Entity.UpdateTime();
+            }
+        }
+    }
+
+    private async Task PublishingDomainEvents()
+    {
+        var domainEvents = _dbContext.ChangeTracker.Entries<AggregateRoot>()
+            .Select(x => x.Entity)
+            .SelectMany(aggregateRoot =>
+            {
+                var domainEvents = aggregateRoot.GetDomainEvents();
+
+                return domainEvents;
+            });
+
+        foreach (var domainEvent in domainEvents)
+        {
+             await _publisher.Publish(domainEvent);
+        }
     }
 
 }

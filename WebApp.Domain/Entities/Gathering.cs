@@ -1,5 +1,6 @@
 ﻿
 using Gatherly.Domain.Exceptions;
+using WebApp.Domain.DomainEvents;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Exceptions;
 using WebApp.Domain.Primitives;
@@ -110,6 +111,8 @@ public sealed class Gathering : AggregateRoot
         }
 
         Attendee attendee = invitation.Accept();
+
+        RaiseDomainEvent(new InvitationAcceptedDomainEvent(invitation.Id, Id));
 
         _attendees.Add(attendee);
         NumberOfAttendees++;

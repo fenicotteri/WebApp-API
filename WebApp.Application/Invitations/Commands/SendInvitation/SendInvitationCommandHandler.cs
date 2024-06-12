@@ -45,7 +45,8 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
 
         _invitationRepository.Add(invitationResult.Value);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork
+            .SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }
