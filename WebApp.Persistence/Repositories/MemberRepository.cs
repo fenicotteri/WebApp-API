@@ -27,5 +27,13 @@ public sealed class MemberRepository : IMemberRepository
 
     public void Update(Member member) =>
         _dbContext.Members.Update(member);
+
+    public async Task<List<Member>> GetAllMembersAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext
+            .Members
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }
 

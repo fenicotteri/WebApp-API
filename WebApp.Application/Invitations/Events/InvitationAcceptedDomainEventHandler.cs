@@ -49,6 +49,6 @@ internal sealed class InvitationAcceptedDomainEventHandler
             "Invitation accepted.", 
             EmailTemplateText);
 
-        await _emailService.SendInvitationAcceptedEmailAsync(gathering, emailData, cancellationToken);
+        await _emailService.SendInvitationAcceptedEmailAsync(emailData, cancellationToken);
     }
 }

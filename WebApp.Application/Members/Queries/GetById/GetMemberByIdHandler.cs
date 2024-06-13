@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
+using WebApp.Application.Abstractions;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;
@@ -6,13 +8,15 @@ using WebApp.Domain.Shared;
 namespace WebApp.Application.Members.Queries.GetById;
 
 internal sealed class GetMemberByIdQueryHandler
-    : IRequestHandler<GetMemberByIdQuery, Result<MemberResponse>>
+    : IQueryHandler<GetMemberByIdQuery, MemberResponse>
 {
     private readonly IMemberRepository _memberRepository;
+    private readonly IMapper _mapper;
 
-    public GetMemberByIdQueryHandler(IMemberRepository memberRepository)
+    public GetMemberByIdQueryHandler(IMemberRepository memberRepository, IMapper mapper)
     {
         _memberRepository = memberRepository;
+        _mapper = mapper;
     }
 
     public async Task<Result<MemberResponse>> Handle(
@@ -29,12 +33,8 @@ internal sealed class GetMemberByIdQueryHandler
         }
 
         // mapper goes here
-        var response = new MemberResponse(
-            member.Email.Value,
-            member.FirstName.Value, 
-            member.LastName.Value, 
-            member.CreatedOnUtc);
-
+        var response = _mapper.Map<MemberResponse>(member);
+          
         return response;
     }
 }

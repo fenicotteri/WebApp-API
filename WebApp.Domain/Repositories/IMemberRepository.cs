@@ -6,6 +6,7 @@ namespace WebApp.Domain.Repositories;
 public interface IMemberRepository
 {
     Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<Member>> GetAllMembersAsync(CancellationToken cancellationToken = default);
 
     Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default);
 

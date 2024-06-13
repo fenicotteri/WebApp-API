@@ -15,6 +15,16 @@ public class GatheringRepository : IGatheringRepository
         _dbContext.Gatherings.Add(gathering);
     }
 
+    public async Task<List<Gathering>> GetByCreatorIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext
+            .Gatherings
+            .AsNoTracking()
+            .Include(gathering => gathering.Creator)
+            .Where(c => c.Creator.Id == id)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Gathering?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext

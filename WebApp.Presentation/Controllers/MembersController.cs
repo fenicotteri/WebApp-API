@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Invitations.Commands.AcceptInvitation;
 using WebApp.Application.Members.Commands.CreateMember;
+using WebApp.Application.Members.Queries.GetAll;
 using WebApp.Application.Members.Queries.GetById;
 using WebApp.Domain.Entities;
 using WebApp.Domain.Shared;
@@ -10,7 +11,8 @@ using WebApp.Presentation.Contracts.Members;
 
 namespace WebApp.Presentation.Controllers;
 
-[Route("api/members")]
+[Route("api/[controller]")]
+[ApiController]
 public sealed class MembersController : Controller
 {
     private readonly IMediator _mediator;
@@ -29,6 +31,17 @@ public sealed class MembersController : Controller
         Result<MemberResponse> response = await _mediator.Send(query, cancellationToken);
 
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AllMembersResponse))]
+    public async Task<ActionResult<AllMembersResponse>> GetMembers(CancellationToken cancellationToken)
+    {
+        var query = new GetAllMembersQuery();
+
+        Result<AllMembersResponse> response = await _mediator.Send(query, cancellationToken);
+
+        return Ok(response.Value);
     }
 
     [HttpPost]

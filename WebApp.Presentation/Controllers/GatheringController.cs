@@ -3,19 +3,36 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Gatherings.Commands.CreateGathering;
+using WebApp.Application.Gatherings.Queries.GetAll;
 using WebApp.Application.Invitations.Commands.SendInvitation;
+using WebApp.Application.Members.Queries.GetById;
 using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Gatherings;
 
 namespace WebApp.Presentation.Controllers;
 
-[Route("api/gatherings")]
+[Route("api/[controller]")]
+[ApiController]
 public sealed class GatheringController : Controller
 {
     private readonly IMediator _mediator;
     public GatheringController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GatheringResponse>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<List<GatheringResponse>>> GetGatheringByCreator(
+        Guid creatorId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetByCreatorGatheringQuerry(creatorId);
+
+        Result<List<GatheringResponse>> response = await _mediator.Send(query, cancellationToken);
+
+        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 
     [HttpPost]
@@ -40,7 +57,7 @@ public sealed class GatheringController : Controller
             return BadRequest(result.Error);
         }
 
-        return Ok(result.Value);
+        return Created(string.Empty, new { id = result.Value });
     }
 
     [HttpPost("invite")]
@@ -60,7 +77,7 @@ public sealed class GatheringController : Controller
             return BadRequest(result.Error);
         }
 
-        return Ok(result);
+        return Created(string.Empty, result);
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using WebApp.Application.Common.Mappings;
 
 namespace WebApp.Application;
 
@@ -13,6 +14,8 @@ public static class ServiceCollectionExtensions
             configuration.RegisterServicesFromAssemblies(assembly));
 
         services.AddValidatorsFromAssembly(assembly);
+
+        services.AddAutoMapper(typeof(MappingProfiles));
 
         return services;
     }

@@ -6,5 +6,5 @@ namespace WebApp.Application.Abstractions;
 
 public interface IEmailService
 {
-    Task SendInvitationAcceptedEmailAsync(Gathering gathering, EmailData emailData, CancellationToken cancellationToken = default);
+    Task SendInvitationAcceptedEmailAsync(EmailData emailData, CancellationToken cancellationToken = default);
 }

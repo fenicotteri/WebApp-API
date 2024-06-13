@@ -17,7 +17,7 @@ internal sealed class EmailService : IEmailService
         _emailSettings = emailSettings.Value ?? throw new ArgumentNullException(nameof(emailSettings));
     }
 
-    public async Task SendInvitationAcceptedEmailAsync(Gathering gathering, EmailData emailData, CancellationToken cancellationToken = default)
+    public async Task SendInvitationAcceptedEmailAsync(EmailData emailData, CancellationToken cancellationToken = default)
     {
         
         try

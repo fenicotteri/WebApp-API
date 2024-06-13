@@ -1,6 +1,5 @@
 ﻿
-using MediatR;
-using WebApp.Domain.Shared;
+using WebApp.Application.Abstractions;
 
 namespace WebApp.Application.Gatherings.Commands.CreateGathering;
 
@@ -10,5 +9,5 @@ public sealed record CreateGatheringCommand(
         string Name,
         string? Location,
         int MaximumNumberOfAttendees,
-        int InvitationsValidBeforeInHours) : IRequest<Result<Guid>>;
+        int InvitationsValidBeforeInHours) : ICommand<Guid>;
 

@@ -1,5 +1,6 @@
 ﻿
 using MediatR;
+using WebApp.Application.Abstractions;
 using WebApp.Domain.Entities;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;
@@ -8,7 +9,7 @@ using WebApp.Persistence.Repositories;
 
 namespace WebApp.Application.Gatherings.Commands.CreateGathering;
 
-public sealed class CreateGatheringCommandHandler : IRequestHandler<CreateGatheringCommand, Result<Guid>>
+public sealed class CreateGatheringCommandHandler : ICommandHandler<CreateGatheringCommand, Guid>
 {
     private readonly IGatheringRepository _gatheringRepository;
     private readonly IMemberRepository _memberRepository;
