@@ -29,6 +29,17 @@ public static class DomainErrors
         public static readonly Error Expired = new(
             "Gathering.Expired",
             "Can't accept invitation for expired gathering");
+
+        public static readonly Func<Guid, Error> NotFound = id => new Error(
+            "Gathering.NotFound",
+            $"The gathering with the identifier {id} was not found.");
+    }
+
+    public static class Invitation
+    {
+        public static readonly Func<Guid, Error> NotFound = id => new Error(
+            "Invitation.NotFound",
+            $"The invitation with the identifier {id} was not found.");
     }
 
     public static class Email

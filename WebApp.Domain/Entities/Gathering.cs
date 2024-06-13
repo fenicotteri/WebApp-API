@@ -112,7 +112,7 @@ public sealed class Gathering : AggregateRoot
 
         Attendee attendee = invitation.Accept();
 
-        RaiseDomainEvent(new InvitationAcceptedDomainEvent(invitation.Id, Id));
+        RaiseDomainEvent(new InvitationAcceptedDomainEvent(attendee));
 
         _attendees.Add(attendee);
         NumberOfAttendees++;

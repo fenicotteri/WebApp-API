@@ -1,15 +1,21 @@
-﻿
+﻿using Microsoft.Extensions.DependencyInjection;
+using WebApp.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using WebApp.Application.Abstractions;
+
 namespace WebApp.Infrastructure;
 
-using Microsoft.Extensions.DependencyInjection;
-using WebApp.Application.Abstractions;
-using WebApp.Infrastructure.Services;
+
 
 public static class ServiceCollectionExtentions
 {
-    public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IEmailService, EmailService>();
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+        services.AddTransient<IEmailService, EmailService>();
+
+        var emailSettings = configuration.GetSection("EmailSettings").Get<EmailSettings>();
+        Console.WriteLine($"Email: {emailSettings.EmailId}, Host: {emailSettings.Host}");
 
         return services;
     }

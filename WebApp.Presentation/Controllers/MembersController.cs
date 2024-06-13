@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Application.Invitations.Commands.AcceptInvitation;
 using WebApp.Application.Members.Commands.CreateMember;
 using WebApp.Application.Members.Queries.GetById;
+using WebApp.Domain.Entities;
 using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Members;
 
@@ -53,6 +55,26 @@ public sealed class MembersController : Controller
             new { id = result.Value },
             result.Value
         );
+    }
+
+    [HttpPost("accept")]
+    public async Task<ActionResult> AcceptInvitation(
+        Guid gatheringId, 
+        Guid invitationId,
+        CancellationToken cancellationToken)
+    {
+        var command = new AcceptInvitationCommand(
+            gatheringId,
+            invitationId);
+
+        Result result = await _mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);  
+        }
+
+        return Ok(result);
     }
 
 }

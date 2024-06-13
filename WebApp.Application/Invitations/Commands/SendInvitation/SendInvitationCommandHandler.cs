@@ -1,13 +1,14 @@
 ﻿
 using MediatR;
 using WebApp.Domain.Entities;
+using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;
 using WebApp.Persistence.Repositories;
 
 namespace WebApp.Application.Invitations.Commands.SendInvitation;
 
-internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitationCommand, Unit>
+internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitationCommand, Result>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IGatheringRepository _gatheringRepository;
@@ -26,21 +27,27 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Unit> Handle(SendInvitationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SendInvitationCommand request, CancellationToken cancellationToken)
     {
         var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
-        var gathering = await _gatheringRepository.GetByIdAsync(request.GatheringId, cancellationToken);
-
-        if (member is null || gathering is null)
+       
+        if (member is null)
         {
-            return Unit.Value;
+            return Result.Failure(DomainErrors.Member.NotFound(request.MemberId));
+        }
+
+        var gathering = await _gatheringRepository.GetByIdWithCreatorAsync(request.GatheringId, cancellationToken);
+
+        if (gathering is null)
+        {
+            return Result.Failure(DomainErrors.Gathering.NotFound(request.GatheringId));
         }
 
         Result<Invitation> invitationResult = gathering.SendInvitation(member);
 
         if (invitationResult.IsFailure)
         {
-            return Unit.Value;
+            return Result.Failure(invitationResult.Error);
         }
 
         _invitationRepository.Add(invitationResult.Value);
@@ -48,6 +55,6 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
         await _unitOfWork
             .SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return Result.Success();
     }
 }

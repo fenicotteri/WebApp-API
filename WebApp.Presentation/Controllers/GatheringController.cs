@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Gatherings.Commands.CreateGathering;
+using WebApp.Application.Invitations.Commands.SendInvitation;
 using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Gatherings;
 
@@ -32,7 +33,7 @@ public sealed class GatheringController : Controller
             request.MaximumNumberOfAttendees,
             request.InvitationsValidBeforeInHours);
 
-        Result<Guid> result = await _mediator.Send(command);
+        Result<Guid> result = await _mediator.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -41,4 +42,25 @@ public sealed class GatheringController : Controller
 
         return Ok(result.Value);
     }
+
+    [HttpPost("invite")]
+    public async Task<ActionResult> SendInvitation(
+        Guid gatheringId, 
+        Guid memberId,
+        CancellationToken cancellationToken)
+    {
+        var command = new SendInvitationCommand(
+            memberId,
+            gatheringId);
+
+        Result result = await _mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result);
+    }
+
 }

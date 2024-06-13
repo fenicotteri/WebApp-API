@@ -1,14 +1,18 @@
+using Microsoft.Extensions.Configuration;
 using WebApp.Application;
 using WebApp.Infrastructure;
+using WebApp.Infrastructure.Services;
 using WebApp.Persistence;
 using WebApp.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddApplicationLayer();
-builder.Services.AddInfrastructureLayer();
+builder.Services.AddInfrastructureLayer(builder.Configuration);
 builder.Services.AddPersistenceLayer(builder.Configuration);
+
 
 builder
     .Services
