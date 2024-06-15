@@ -1,4 +1,6 @@
-using Microsoft.Extensions.Configuration;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using WebApp.API.OptionsSetup;
 using WebApp.Application;
 using WebApp.Infrastructure;
 using WebApp.Infrastructure.Services;
@@ -23,6 +25,13 @@ builder
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+builder.Services.ConfigureOptions<EmailOptionsSetup>();
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

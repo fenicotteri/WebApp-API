@@ -1,6 +1,6 @@
 ﻿
 using AutoMapper;
-using WebApp.Application.Abstractions;
+using WebApp.Application.Abstractions.Messaging;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;

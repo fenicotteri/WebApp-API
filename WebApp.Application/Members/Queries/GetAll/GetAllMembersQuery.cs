@@ -1,5 +1,4 @@
-﻿
-using WebApp.Application.Abstractions;
+﻿using WebApp.Application.Abstractions.Messaging;
 
 namespace WebApp.Application.Members.Queries.GetAll;
 

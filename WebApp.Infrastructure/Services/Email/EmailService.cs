@@ -1,30 +1,27 @@
-﻿
-using WebApp.Domain.Entities;
-using WebApp.Application.Abstractions;
-using MimeKit;
+﻿using MimeKit;
 using Microsoft.Extensions.Options;
 using MailKit.Net.Smtp;
 using WebApp.Domain.Exceptions;
-using static System.Net.Mime.MediaTypeNames;
+using WebApp.Application.Abstractions.Services;
 
-namespace WebApp.Infrastructure.Services;
+namespace WebApp.Infrastructure.Services.Email;
 internal sealed class EmailService : IEmailService
 {
-    private readonly EmailSettings _emailSettings;
+    private readonly EmailOptions _emailOptions;
 
-    public EmailService(IOptions<EmailSettings> emailSettings)
+    public EmailService(IOptions<EmailOptions> emailOptions)
     {
-        _emailSettings = emailSettings.Value ?? throw new ArgumentNullException(nameof(emailSettings));
+        _emailOptions = emailOptions.Value;
     }
 
     public async Task SendInvitationAcceptedEmailAsync(EmailData emailData, CancellationToken cancellationToken = default)
     {
-        
+
         try
         {
 
             MimeMessage emailMessage = new();
-            MailboxAddress emailFrom = new(_emailSettings.Name, _emailSettings.EmailId);
+            MailboxAddress emailFrom = new(_emailOptions.Name, _emailOptions.EmailId);
             emailMessage.From.Add(emailFrom);
 
             MailboxAddress emailTo = new(emailData.EmailToName, emailData.EmailToId);
@@ -38,16 +35,16 @@ internal sealed class EmailService : IEmailService
 
             using (var emailClient = new SmtpClient())
             {
-                await emailClient.ConnectAsync(_emailSettings.Host, _emailSettings.Port, _emailSettings.UseSSL, cancellationToken);
-                await emailClient.AuthenticateAsync(_emailSettings.EmailId, _emailSettings.Password, cancellationToken);
+                await emailClient.ConnectAsync(_emailOptions.Host, _emailOptions.Port, _emailOptions.UseSSL, cancellationToken);
+                await emailClient.AuthenticateAsync(_emailOptions.EmailId, _emailOptions.Password, cancellationToken);
                 await emailClient.SendAsync(emailMessage, cancellationToken);
                 await emailClient.DisconnectAsync(true, cancellationToken);
             }
         }
-        catch 
+        catch
         {
             throw new EmailSendingWasUnsuccessful("Something went wrong while sending the email.");
         }
     }
-        
+
 }

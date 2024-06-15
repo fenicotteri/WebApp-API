@@ -1,7 +1,7 @@
 ﻿
 using MediatR;
 using System.Net.Mail;
-using WebApp.Application.Abstractions;
+using WebApp.Application.Abstractions.Services;
 using WebApp.Domain.DomainEvents;
 using WebApp.Domain.Repositories;
 using WebApp.Infrastructure.Services;

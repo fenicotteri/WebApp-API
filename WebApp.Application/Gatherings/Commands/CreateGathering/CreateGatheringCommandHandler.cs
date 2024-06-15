@@ -1,6 +1,6 @@
 ﻿
 using MediatR;
-using WebApp.Application.Abstractions;
+using WebApp.Application.Abstractions.Messaging;
 using WebApp.Domain.Entities;
 using WebApp.Domain.Errors;
 using WebApp.Domain.Repositories;

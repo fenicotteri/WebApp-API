@@ -1,7 +1,7 @@
 ﻿
 
 using MediatR;
-using WebApp.Application.Abstractions;
+using WebApp.Application.Abstractions.Messaging;
 using WebApp.Domain.Shared;
 
 namespace WebApp.Application.Gatherings.Queries.GetAll;

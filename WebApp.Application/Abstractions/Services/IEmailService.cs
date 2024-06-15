@@ -1,8 +1,7 @@
-﻿
-using WebApp.Domain.Entities;
+﻿using WebApp.Domain.Entities;
 using WebApp.Infrastructure.Services;
 
-namespace WebApp.Application.Abstractions;
+namespace WebApp.Application.Abstractions.Services;
 
 public interface IEmailService
 {
