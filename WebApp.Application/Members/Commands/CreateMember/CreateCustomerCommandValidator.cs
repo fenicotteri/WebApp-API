@@ -8,14 +8,13 @@ internal sealed class CreateCustomerCommandValidator : AbstractValidator<CreateM
 {
     public CreateCustomerCommandValidator() 
     {
-        RuleFor(x => x.Email).NotEmpty();
+
+        RuleFor(x => x.Email).EmailAddress().NotEmpty();
 
         RuleFor(x => x.FirstName).NotEmpty()
-            .MaximumLength(FirstName.MaxLength)
-            .WithMessage($"First name shouldnt be grater than {FirstName.MaxLength}");
+            .MaximumLength(FirstName.MaxLength);
 
         RuleFor(x => x.LastName).NotEmpty()
-            .MaximumLength(LastName.MaxLength)
-            .WithMessage($"Last name shouldnt be grater than {LastName.MaxLength}");
+            .MaximumLength(LastName.MaxLength);
     }
 }

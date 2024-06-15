@@ -13,12 +13,11 @@ namespace WebApp.Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public sealed class GatheringController : Controller
+public sealed class GatheringController : ApiController
 {
-    private readonly IMediator _mediator;
-    public GatheringController(IMediator mediator)
+    public GatheringController(IMediator mediator) 
+        : base(mediator)
     {
-        _mediator = mediator;
     }
 
     [HttpGet("{id:guid}")]

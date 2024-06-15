@@ -13,18 +13,17 @@ namespace WebApp.Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public sealed class MembersController : Controller
+public sealed class MembersController : ApiController
 {
-    private readonly IMediator _mediator;
-    public MembersController(IMediator mediator)
+    public MembersController(IMediator mediator) 
+        : base(mediator)
     {
-        _mediator = mediator;
     }
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MemberResponse>> GetMemberById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMemberById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetMemberByIdQuery(id);
 
@@ -35,7 +34,7 @@ public sealed class MembersController : Controller
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AllMembersResponse))]
-    public async Task<ActionResult<AllMembersResponse>> GetMembers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMembers(CancellationToken cancellationToken)
     {
         var query = new GetAllMembersQuery();
 
@@ -47,7 +46,7 @@ public sealed class MembersController : Controller
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> RegisterMember(
+    public async Task<IActionResult> RegisterMember(
     [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
     {
@@ -60,7 +59,7 @@ public sealed class MembersController : Controller
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return HandleFailure(result);
         }
 
         return CreatedAtAction(
@@ -71,7 +70,7 @@ public sealed class MembersController : Controller
     }
 
     [HttpPost("accept")]
-    public async Task<ActionResult> AcceptInvitation(
+    public async Task<IActionResult> AcceptInvitation(
         Guid gatheringId, 
         Guid invitationId,
         CancellationToken cancellationToken)

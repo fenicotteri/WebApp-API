@@ -21,35 +21,22 @@ internal sealed class CreateMemberCommandHandler : IRequestHandler<CreateMemberC
         _memberRepository = memberRepository;
         _unitOfWork = unitOfWork;
     }
+    
     public async Task<Result<Guid>> Handle(CreateMemberCommand request, CancellationToken cancellationToken)
     {
         Result<Email> emailResult = Email.Create(request.Email);
-        if (emailResult.IsFailure)
-        {
-            return Result.Failure<Guid>(emailResult.Error);
-        }
+        Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
+        Result<LastName> lastNameResult = LastName.Create(request.LastName);
 
         if (!await _memberRepository.IsEmailUniqueAsync(emailResult.Value, cancellationToken))
         {
             return Result.Failure<Guid>(DomainErrors.Member.EmailAlreadyInUse);
         }
 
-        Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
-        if (firstNameResult.IsFailure)
-        {
-            return Result.Failure<Guid>(firstNameResult.Error);
-        }
-
-        Result<LastName> lastNameResult = LastName.Create(request.LastName);
-        if (lastNameResult.IsFailure)
-        {
-            return Result.Failure<Guid>(lastNameResult.Error);
-        }
-
         var member = new Member(
-            new Guid(), 
-            emailResult.Value, 
-            firstNameResult.Value, 
+            new Guid(),
+            emailResult.Value,
+            firstNameResult.Value,
             lastNameResult.Value);
 
         _memberRepository.Add(member);
