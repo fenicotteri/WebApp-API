@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using WebApp.Domain.Entities;
+using WebApp.Domain.QueryObjects;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.ValueObjects;
 using WebApp.Persistence;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace WebApp.Infastructure.Repositories;
@@ -28,12 +31,20 @@ public sealed class MemberRepository : IMemberRepository
     public void Update(Member member) =>
         _dbContext.Members.Update(member);
 
-    public async Task<List<Member>> GetAllMembersAsync(CancellationToken cancellationToken = default)
+    public async Task<List<Member>> GetAllMembersAsync(MemberQueryObject queryObject, CancellationToken cancellationToken = default)
     {
-        return await _dbContext
-            .Members
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        IQueryable<Member> membersQuery = _dbContext.Members;
+
+        if (!string.IsNullOrWhiteSpace(queryObject.SearchTerm))
+        {
+            membersQuery = membersQuery.Where(m => ((string)m.Email).Contains(queryObject.SearchTerm));
+        }
+
+        var skipNumber = (queryObject.PageNumber - 1) * queryObject.PageSize;
+        membersQuery = membersQuery.Skip(skipNumber).Take(queryObject.PageSize);
+
+        return await membersQuery.ToListAsync(cancellationToken: cancellationToken);
+       
     }
 }
 

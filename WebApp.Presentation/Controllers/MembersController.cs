@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Invitations.Commands.AcceptInvitation;
 using WebApp.Application.Members.Commands.CreateMember;
+using WebApp.Application.Members.Commands.UpdateMember;
 using WebApp.Application.Members.Queries.GetAll;
 using WebApp.Application.Members.Queries.GetById;
-using WebApp.Domain.Entities;
+using WebApp.Domain;
 using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Members;
 
@@ -27,18 +28,20 @@ public sealed class MembersController : ApiController
     {
         var query = new GetMemberByIdQuery(id);
 
-        Result<MemberResponse> response = await _mediator.Send(query, cancellationToken);
+        Result<MemberResponse> response = await _sender.Send(query, cancellationToken);
 
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AllMembersResponse))]
-    public async Task<IActionResult> GetMembers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMembers(
+        [FromQuery] MemberQueryObjectRequest request,
+        CancellationToken cancellationToken)
     {
-        var query = new GetAllMembersQuery();
+        var query = new GetAllMembersQuery(request);
 
-        Result<AllMembersResponse> response = await _mediator.Send(query, cancellationToken);
+        Result<AllMembersResponse> response = await _sender.Send(query, cancellationToken);
 
         return Ok(response.Value);
     }
@@ -55,7 +58,7 @@ public sealed class MembersController : ApiController
             request.FirstName,
             request.LastName);
 
-        Result<Guid> result = await _mediator.Send(command, cancellationToken);
+        Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -79,7 +82,7 @@ public sealed class MembersController : ApiController
             gatheringId,
             invitationId);
 
-        Result result = await _mediator.Send(command, cancellationToken);
+        Result result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -87,6 +90,29 @@ public sealed class MembersController : ApiController
         }
 
         return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateMember(
+        Guid id,
+        [FromBody] UpdateMemberRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateMemberCommand(
+            id,
+            request.FirstName,
+            request.LastName);
+
+        Result result = await _sender.Send(
+            command,
+            cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return NoContent();
     }
 
 }

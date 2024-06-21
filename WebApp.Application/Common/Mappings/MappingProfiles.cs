@@ -3,7 +3,9 @@ using AutoMapper;
 using WebApp.Application.Gatherings.Queries.GetAll;
 using WebApp.Application.Members.Queries.GetAll;
 using WebApp.Application.Members.Queries.GetById;
+using WebApp.Domain;
 using WebApp.Domain.Entities;
+using WebApp.Domain.QueryObjects;
 
 namespace WebApp.Application.Common.Mappings;
 
@@ -22,6 +24,13 @@ public class MappingProfiles : Profile
         CreateMap<List<Member>, AllMembersResponse>()
             .ForMember(dest => dest.Members, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Count));
+
+        CreateMap<List<Gathering>, AllGatheringsResponse>()
+            .ForMember(dest => dest.Gatherings, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Count));
+
+        CreateMap<MemberQueryObjectRequest, MemberQueryObject>();
+        CreateMap<GatheringQueryObjectRequest, GatheringQueryObject>();
 
     }
 }

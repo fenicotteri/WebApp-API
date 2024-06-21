@@ -9,6 +9,8 @@ public sealed class Email : ValueObject
 {
     private Email(string value) => Value = value;
 
+    public static explicit operator string(Email email) => email.Value;
+
     public string Value { get; }
 
     public static Result<Email> Create(string email)

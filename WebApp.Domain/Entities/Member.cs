@@ -5,7 +5,7 @@ namespace WebApp.Domain.Entities;
 
 public sealed class Member : AggregateRoot
 {
-    public Member(Guid id, Email email, FirstName firstName, LastName lastName)
+    private Member(Guid id, Email email, FirstName firstName, LastName lastName)
         : base(id)
     {
         Email = email;
@@ -27,6 +27,28 @@ public sealed class Member : AggregateRoot
     public DateTime CreatedOnUtc { get; init; }
 
     public DateTime? ModifiedOnUtc { get; private set; }
+
+    public static Member Create(
+        Guid id,
+        Email email,
+        FirstName firstName,
+        LastName lastName)
+    {
+        var member = new Member(
+            id,
+            email,
+            firstName,
+            lastName);
+
+        return member;
+    }
+
+    public void ChangeName(FirstName firstName, LastName lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+
 
 }
 

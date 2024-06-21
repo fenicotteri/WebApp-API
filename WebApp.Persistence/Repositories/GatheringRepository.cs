@@ -1,7 +1,9 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Threading;
 using WebApp.Domain.Entities;
+using WebApp.Domain.QueryObjects;
 
 namespace WebApp.Persistence.Repositories;
 public class GatheringRepository : IGatheringRepository
@@ -13,6 +15,30 @@ public class GatheringRepository : IGatheringRepository
     public void Add(Gathering gathering)
     {
         _dbContext.Gatherings.Add(gathering);
+    }
+
+    public async Task<List<Gathering>> GetAllAsync(GatheringQueryObject queryObject, CancellationToken cancellationToken = default)
+    {
+        IQueryable<Gathering> membersQuery = _dbContext.Gatherings;
+
+        Expression<Func<Gathering, object>> keySelector = queryObject.SortColumn switch
+        {
+            "time" => gathering => gathering.ScheduledAtUtc,
+            "time_acc" => gathering => gathering.InvitationsExpireAtUtc,
+            _ => gathering => gathering.Id
+        };
+
+        if (queryObject.SortOrder?.ToLower() == "desc")
+        {
+            membersQuery = membersQuery.OrderByDescending(keySelector);
+        }
+        else
+        {
+            membersQuery.OrderBy(keySelector);
+        }
+
+        return await membersQuery
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<List<Gathering>> GetByCreatorIdAsync(Guid id, CancellationToken cancellationToken = default)

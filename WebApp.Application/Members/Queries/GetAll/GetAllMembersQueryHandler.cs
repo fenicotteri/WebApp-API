@@ -1,7 +1,6 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using WebApp.Application.Abstractions.Messaging;
+using WebApp.Domain.QueryObjects;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.Shared;
 
@@ -21,7 +20,9 @@ internal sealed class GetAllMembersQueryHandler :
 
     public async Task<Result<AllMembersResponse>> Handle(GetAllMembersQuery request, CancellationToken cancellationToken)
     {
-        var members = await _memberRepository.GetAllMembersAsync(cancellationToken);
+        var requestObject = _mapper.Map<MemberQueryObject>(request.QueryObjectRequest);
+
+        var members = await _memberRepository.GetAllMembersAsync(requestObject, cancellationToken);
 
         var response = _mapper.Map<AllMembersResponse>(members);
 

@@ -23,6 +23,7 @@ internal sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
             .Property(x => x.FirstName)
             .HasConversion(x => x.Value, v => FirstName.Create(v).Value)
             .HasMaxLength(FirstName.MaxLength);
+       
 
         builder
             .Property(x => x.LastName)

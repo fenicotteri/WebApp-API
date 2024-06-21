@@ -49,13 +49,13 @@ namespace WebApp.Infastructure.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("InvitationsExpireAtUtc")
+                    b.Property<DateTime>("InvitationsExpireAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
-                    b.Property<int?>("MaximumNumberOfAttendees")
+                    b.Property<int>("MaximumNumberOfAttendees")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")

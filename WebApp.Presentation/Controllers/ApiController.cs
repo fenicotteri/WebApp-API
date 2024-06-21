@@ -8,9 +8,9 @@ namespace WebApp.Presentation.Controllers;
 [ApiController]
 public abstract class ApiController : ControllerBase
 {
-    protected readonly IMediator _mediator;
+    protected readonly ISender _sender;
 
-    protected ApiController(IMediator mediator) => _mediator = mediator;
+    protected ApiController(ISender sender) => _sender = sender;
 
     protected IActionResult HandleFailure(Result result) =>
         result switch

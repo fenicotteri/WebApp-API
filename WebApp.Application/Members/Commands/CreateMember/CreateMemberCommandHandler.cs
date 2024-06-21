@@ -33,7 +33,7 @@ internal sealed class CreateMemberCommandHandler : IRequestHandler<CreateMemberC
             return Result.Failure<Guid>(DomainErrors.Member.EmailAlreadyInUse);
         }
 
-        var member = new Member(
+        var member = Member.Create(
             new Guid(),
             emailResult.Value,
             firstNameResult.Value,

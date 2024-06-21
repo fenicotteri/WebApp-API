@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebApp.Application.Gatherings.Commands.CreateGathering;
 using WebApp.Application.Gatherings.Queries.GetAll;
 using WebApp.Application.Invitations.Commands.SendInvitation;
-using WebApp.Application.Members.Queries.GetById;
+using WebApp.Application.Members.Queries.GetAll;
+using WebApp.Domain;
 using WebApp.Domain.Shared;
 using WebApp.Presentation.Contracts.Gatherings;
 
@@ -29,9 +30,22 @@ public sealed class GatheringController : ApiController
     {
         var query = new GetByCreatorGatheringQuerry(creatorId);
 
-        Result<List<GatheringResponse>> response = await _mediator.Send(query, cancellationToken);
+        Result<List<GatheringResponse>> response = await _sender.Send(query, cancellationToken);
 
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AllGatheringsResponse))]
+    public async Task<IActionResult> GetGatherings(
+        [FromQuery] GatheringQueryObjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllGatheringsQuery(request);
+
+        Result<AllGatheringsResponse> response = await _sender.Send(query, cancellationToken);
+
+        return Ok(response.Value);
     }
 
     [HttpPost]
@@ -49,7 +63,7 @@ public sealed class GatheringController : ApiController
             request.MaximumNumberOfAttendees,
             request.InvitationsValidBeforeInHours);
 
-        Result<Guid> result = await _mediator.Send(command, cancellationToken);
+        Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -69,7 +83,7 @@ public sealed class GatheringController : ApiController
             memberId,
             gatheringId);
 
-        Result result = await _mediator.Send(command, cancellationToken);
+        Result result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
