@@ -11,7 +11,11 @@ public sealed class Email : ValueObject
 
     public static explicit operator string(Email email) => email.Value;
 
-    public string Value { get; }
+    public string Value { get; private set; }
+
+    private Email()
+    {
+    }
 
     public static Result<Email> Create(string email)
     {

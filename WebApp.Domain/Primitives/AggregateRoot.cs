@@ -1,7 +1,5 @@
 ﻿
 using Domain.Primitives;
-using WebApp.Domain.DomainEvents;
-
 
 namespace WebApp.Domain.Primitives;
 

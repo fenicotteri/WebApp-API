@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp.Domain.Repositories;
-using WebApp.Infastructure.Repositories;
 using WebApp.Persistence.Repositories;
 
 namespace WebApp.Persistence;
@@ -13,6 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddDbContext(configuration);
         services.AddRepositories();
+        services.AddCaching(configuration);
         return services;
     }
 
@@ -23,6 +23,18 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<DataContext>(options =>
         {
             options.UseNpgsql(connectionString, builder => builder.MigrationsAssembly(typeof(DataContext).Assembly.FullName));
+        });
+    }
+
+    private static void AddCaching(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Decorate<IMemberRepository, CachedMemberRepository>();
+
+        services.AddStackExchangeRedisCache(redisOptions =>
+        {
+            string? connection = configuration.GetConnectionString("Redis");
+
+            redisOptions.Configuration = connection;
         });
     }
 

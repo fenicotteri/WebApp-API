@@ -11,7 +11,10 @@ public sealed class LastName : ValueObject
 
     private LastName(string value) => Value = value;
 
-    public string Value { get; }
+    public string Value { get; private set; }
+    private LastName()
+    {
+    }
 
     public static Result<LastName> Create(string lastName)
     {

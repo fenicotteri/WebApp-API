@@ -7,8 +7,11 @@ namespace WebApp.Domain.ValueObjects;
 public sealed class FirstName : ValueObject
 {
     public const int MaxLength = 100;
-    public string Value { get; }
+    public string Value { get; private set; }
     private FirstName(string value) => Value = value;
+    private FirstName()
+    {
+    }
 
     public static Result<FirstName> Create(string value)
     {

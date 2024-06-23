@@ -1,14 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using WebApp.Domain.Entities;
 using WebApp.Domain.QueryObjects;
 using WebApp.Domain.Repositories;
 using WebApp.Domain.ValueObjects;
-using WebApp.Persistence;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-
-namespace WebApp.Infastructure.Repositories;
+namespace WebApp.Persistence.Repositories;
 
 public sealed class MemberRepository : IMemberRepository
 {
@@ -44,7 +40,7 @@ public sealed class MemberRepository : IMemberRepository
         membersQuery = membersQuery.Skip(skipNumber).Take(queryObject.PageSize);
 
         return await membersQuery.ToListAsync(cancellationToken: cancellationToken);
-       
+
     }
 }
 
