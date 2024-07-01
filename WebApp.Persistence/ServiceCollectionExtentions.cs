@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddDbContext(configuration);
         services.AddRepositories();
-        services.AddCaching(configuration);
+        // services.AddDecoratorCaching(configuration);
         return services;
     }
 
@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static void AddCaching(this IServiceCollection services, IConfiguration configuration)
+    private static void AddDecoratorCaching(this IServiceCollection services, IConfiguration configuration)
     {
         services.Decorate<IMemberRepository, CachedMemberRepository>();
 
